@@ -1,0 +1,58 @@
+.container {
+  padding: 50px 50px 0 50px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 50px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(5%, auto));
+  grid-gap: 1px;
+  background-color: grey; 
+  border: 1px solid grey;
+  margin-bottom: 50px;
+}
+
+.grid-item {
+  width: 100%;
+  height: 50px;
+  padding: 5px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#clock {
+  width: 50px;
+}
+
+.code-secret-container { 
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.code-secret {
+  border: 1px solid grey;
+  padding: 10px 50px;
+  width: fit-content;
+}
+
+#live {
+  margin-bottom: 10px;
+}
+
+#red-ball {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background-color: red;
+}

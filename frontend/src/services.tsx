@@ -26,3 +26,15 @@ export async function getGrid() {
     return generateEmptyGrid()
   }
 }
+
+export async function getSecretCode() {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/code`) 
+    const result = await response.json()
+
+    return JSON.parse(result)
+  } catch(e) {
+    console.error(e)
+    return generateEmptyGrid()
+  }
+}

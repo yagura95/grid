@@ -1,7 +1,7 @@
 import "./App.css"
 import { useState } from "react"
-import { setBias, getGrid } from "./services.tsx"
-import { getSecretCode, generateEmptyGrid } from "./utils.tsx"
+import { setBias, getGrid, getSecretCode } from "./services.tsx"
+import { generateEmptyGrid } from "./utils.tsx"
 
 function App() {
   const [grid, setGrid] = useState<string[][]>(generateEmptyGrid())
@@ -10,7 +10,7 @@ function App() {
 
   async function generateGrid() {
     const newGrid = await getGrid()
-    const newCode = getSecretCode(newGrid)
+    const newCode = await getSecretCode() 
 
     setGrid(newGrid)
     setCode(newCode)

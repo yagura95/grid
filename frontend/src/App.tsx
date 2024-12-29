@@ -1,18 +1,31 @@
 import "./App.css"
-import { useEffect, useState, useRef } from "react"
+import { useState } from "react"
 
-async function getGrid(bias: string) {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grid`, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json"
-      },
-      body: JSON.stringify({ bias })
-  }) 
+async function setBias(bias: string) {
+  try {
+    await fetch(`${import.meta.env.VITE_BACKEND_URL}/bias`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify({ bias })
+    }) 
 
-  const result = await response.json()
+  } catch(e) {
+    console.error(e)
+  }
+}
 
-  return JSON.parse(result)
+async function getGrid() {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grid`) 
+    const result = await response.json()
+
+    return JSON.parse(result)
+  } catch(e) {
+    console.error(e)
+    return generateEmptyGrid()
+  }
 }
 
 function normalizeValue(count: number): number {
@@ -55,34 +68,30 @@ function getSecretCode(grid: string[][]) {
   return firstLetterCount * 10 + secondLetterCount
 }
 
-const emptyGrid: string[][] = new Array(10).fill(new Array(10).fill(""))
+function generateEmptyGrid(): string[][] {
+  return new Array(10).fill(new Array(10).fill(""))
+}
 
 function App() {
-  const [grid, setGrid] = useState<string[][]>(emptyGrid)
+  const [grid, setGrid] = useState<string[][]>(generateEmptyGrid())
   const [char, setChar] = useState<string>("")
   const [code, setCode] = useState<number>(0)
-  const generateGridInteval = useRef<number>(0)
-  
-  async function generateGrid(char: string) {
-    clearInterval(generateGridInteval.current)
 
-    setGrid(await getGrid(char))
+  async function generateGrid() {
+    const newGrid = await getGrid()
+    const newCode = getSecretCode(newGrid)
 
-    generateGridInteval.current = setInterval(async () => {
-      setGrid(await getGrid(char))
+    setGrid(newGrid)
+    setCode(newCode)
+  }
+
+  function generate() {
+    generateGrid()
+
+    setInterval(() => {
+      generateGrid()
     }, 2000)
-  } 
-
-  useEffect(() => {
-    if(!generateGridInteval.current) return 
-
-    generateGrid(char) 
-  }, [char])
-
-  useEffect(() => {
-    const code = getSecretCode(grid)
-    setCode(code)
-  }, [grid])
+  }
 
   function updateChar(e) {
     const value = e.target.value
@@ -90,6 +99,7 @@ function App() {
     if(!value.match("[a-z ]")) return setChar("")
 
     setChar(value) 
+    setBias(value)
 
     e.target.disabled = true
 
@@ -108,7 +118,7 @@ function App() {
         <img alt="clock" id="clock" src="/clock.svg" />
       </div>
       <div className="header-item">
-        <button onPointerUp={() => generateGrid(char)}>GENERATE 2D GRID</button>
+        <button onPointerUp={generate}>GENERATE 2D GRID</button>
       </div>
     </header>
 

@@ -30,7 +30,7 @@ function generateEmptyGrid(numRows, numColumns) {
 function insertGridBias(grid, bias) {
   let biasCount = GRID_ROWS * GRID_COLUMNS * BIAS_PERCENT 
 
-  while(biasCount > -1) {
+  while(biasCount > 0) {
     const row = generateRandomNumber(0, GRID_ROWS - 1) 
     const col = generateRandomNumber(0, GRID_COLUMNS - 1) 
 
@@ -76,12 +76,19 @@ app.use(
 
 app.use(express.json())
 
-app.post("/grid", (req, res) => {
-  const bias = req.body.bias
+let bias = ""
 
+app.get("/grid", (req, res) => {
   const grid = generateGrid(bias)
 
   res.json(JSON.stringify(grid))
+})
+
+app.post("/bias", (req, res) => {
+  bias = req.body.bias
+
+  console.log(bias)
+  res.json({})
 })
 
 app.listen(PORT, () => {

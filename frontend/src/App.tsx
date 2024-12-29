@@ -111,14 +111,14 @@ function App() {
   return <div className="container">
     <header>
       <div className="header-item">
-        <label htmlFor="char">CHARACTER</label>
-        <input maxLength={1} placeholder="Character" name="char" type="text" onChange={updateChar} value={char}/>
+        <label id="secret-code-label" htmlFor="char">CHARACTER</label>
+        <input id="secret-code-input" maxLength={1} placeholder="Character" name="char" type="text" onChange={updateChar} value={char}/>
       </div>
       <div className="header-item">
         <img alt="clock" id="clock" src="/clock.svg" />
       </div>
       <div className="header-item">
-        <button onPointerUp={generate}>GENERATE 2D GRID</button>
+        <button id="generate-btn" onPointerUp={generate}>GENERATE 2D GRID</button>
       </div>
     </header>
 
@@ -136,7 +136,7 @@ function App() {
         LIVE 
       </div>
       <div className="code-secret">
-        <div id="code">Your code: <span>{code}</span></div>
+        <div id="code">YOUR CODE: <span>{code}</span></div>
       </div>
     </div>
   </div>

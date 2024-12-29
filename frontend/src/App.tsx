@@ -1,8 +1,15 @@
 import "./App.css"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
-async function getGrid() {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grid`) 
+async function getGrid(bias: string) {
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grid`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify({ bias })
+  }) 
+
   const result = await response.json()
 
   return JSON.parse(result)
@@ -12,9 +19,13 @@ function normalizeValue(count: number): number {
   if(count < 10) return count
 
   const n = count.toString()
-  const divisor = parseInt(n[0]) + 1
+  let divisor = parseInt(n[0]) + 1
+  
+  while(count % divisor !== 0) {
+    divisor++
+  }
 
-  return count / divisor
+  return count / divisor 
 }
 
 function getSecretCode(grid: string[][]) {
@@ -50,33 +61,54 @@ function App() {
   const [grid, setGrid] = useState<string[][]>(emptyGrid)
   const [char, setChar] = useState<string>("")
   const [code, setCode] = useState<number>(0)
+  const generateGridInteval = useRef<number>(0)
   
-  async function generateGrid() {
-    setGrid(await getGrid())
+  async function generateGrid(char: string) {
+    clearInterval(generateGridInteval.current)
 
-    setInterval(async () => {
-      setGrid(await getGrid())
+    setGrid(await getGrid(char))
+
+    generateGridInteval.current = setInterval(async () => {
+      setGrid(await getGrid(char))
     }, 2000)
-  }
+  } 
+
+  useEffect(() => {
+    if(!generateGridInteval.current) return 
+
+    generateGrid(char) 
+  }, [char])
 
   useEffect(() => {
     const code = getSecretCode(grid)
     setCode(code)
   }, [grid])
 
-  function verifyChar() {}
+  function updateChar(e) {
+    const value = e.target.value
+
+    if(!value.match("[a-z ]")) return setChar("")
+
+    setChar(value) 
+
+    e.target.disabled = true
+
+    setTimeout(() => {
+      e.target.disabled = false
+    }, 4000)
+  }
 
   return <div className="container">
     <header>
       <div className="header-item">
         <label htmlFor="char">CHARACTER</label>
-        <input maxLength={1} pattern="[a-z]" placeholder="Character" name="char" type="text" onChange={verifyChar} />
+        <input maxLength={1} placeholder="Character" name="char" type="text" onChange={updateChar} value={char}/>
       </div>
       <div className="header-item">
         <img alt="clock" id="clock" src="/clock.svg" />
       </div>
       <div className="header-item">
-        <button onPointerUp={generateGrid}>GENERATE 2D GRID</button>
+        <button onPointerUp={() => generateGrid(char)}>GENERATE 2D GRID</button>
       </div>
     </header>
 

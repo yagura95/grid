@@ -1,6 +1,7 @@
 import "./Homepage.css"
-import { useState } from "react"
-import { setBias, getGrid, getSecretCode, startGenerator } from "../../services.tsx"
+import { useState, useEffect } from "react"
+import { socket } from "../../services/socket.ts"
+import { setBias, startGenerator } from "../../services.tsx"
 import { generateEmptyGrid } from "../../utils.tsx"
 
 import Header from "./Header.tsx"
@@ -11,23 +12,6 @@ function Homepage() {
   const [grid, setGrid] = useState<string[][]>(generateEmptyGrid())
   const [char, setChar] = useState<string>("")
   const [code, setCode] = useState<number>(0)
-
-  async function generateGrid() {
-    const newGrid = await getGrid()
-    const newCode = await getSecretCode() 
-
-    setGrid(newGrid)
-    setCode(newCode)
-  }
-
-  async function generate() {
-    await startGenerator() 
-    generateGrid()
-
-    setInterval(() => {
-      generateGrid()
-    }, 2000)
-  }
 
   function updateChar(e) {
     const value = e.target.value
@@ -44,8 +28,34 @@ function Homepage() {
     }, 4000)
   }
 
+  useEffect(() => {
+    socket.emit("GENERATOR_CHECK")
+
+    socket.on("GENERATOR_START", ({ grid, code, bias }) => {
+      setGrid(grid)
+      setCode(code)
+      setChar(bias)
+    })
+
+    socket.on("NEW_GRID", ({ grid, code, bias }) => {
+      setGrid(grid)
+      setCode(code)
+      setChar(bias)
+    })
+
+    socket.on("NEW_BIAS", ({ bias }) => {
+      setChar(bias)
+    })
+    
+    return () => {
+      socket.off("GENERATOR_START")
+      socket.off("NEW_GRID")
+      socket.off("NEW_BIAS")
+    }
+  }, [])
+
   return <div className="container">
-    <Header char={char} generate={generate} updateChar={updateChar} />
+    <Header char={char} generate={startGenerator} updateChar={updateChar} />
     <Grid grid={grid} />
     <SecretCode code={code} />
   </div>

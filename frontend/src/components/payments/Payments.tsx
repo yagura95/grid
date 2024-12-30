@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
-import { getSecretCode, savePayment, getPayments } from "../../services"
+
 import { Payment } from "../../Interfaces.ts"
+import { socket } from "../../services/socket.ts"
+import { getSecretCode, savePayment, getPayments } from "../../services"
 
 import SecretCode from "../homepage/SecretCode"
 import PaymentsForm from "./PaymentsForm.tsx"
@@ -21,8 +23,7 @@ const Payments = () => {
 
     if(!payment || !amount) return 
     
-    const newPayment= await savePayment(payment, amount)
-    setPayments(prev => [...prev, newPayment])
+    await savePayment(payment, amount)
 
     setPayment("")
     setAmount("")
@@ -44,12 +45,17 @@ const Payments = () => {
       setCode(code)
     })
 
-    const secretCodeInterval = setInterval(async () => {
-      setCode(await getSecretCode())
-    }, 2000)
+    socket.on("NEW_GRID", ({ code }) => {
+      setCode(code)
+    })
+
+    socket.on("NEW_PAYMENT", (payments) =>  {
+      setPayments(payments)
+    })
 
     return () => {
-      clearInterval(secretCodeInterval)
+      socket.off("NEW_GRID")
+      socket.off("NEW_PAYMENT")
     }
   }, [])
 

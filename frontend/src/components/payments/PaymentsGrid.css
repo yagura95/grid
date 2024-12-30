@@ -1,0 +1,30 @@
+.payments-grid {
+  margin-top: 30px;
+  width: 100%;
+  margin-bottom: 50px;
+  border: 1px solid var(--light-grey);
+  border-collapse: collapse;
+  border-radius: 5px;
+}
+
+th {
+  text-align: center; 
+  padding: 10px 10px;
+}
+
+th:first-child {
+  text-align: left; 
+  padding-left: 15px;
+  width: 60%;
+}
+
+td {
+  text-align: center;
+  padding: 10px 10px;
+}
+
+td:first-child {
+  padding-left: 15px;
+  text-align: left;
+}
+

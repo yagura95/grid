@@ -1,7 +1,7 @@
 const express = require("express")
 const cors = require('cors')
 const { PORT } = require("./constants.js")
-const { generateGrid, getSecretCode } = require("./utils.js")
+const { generateGrid, generateEmptyGrid, getSecretCode } = require("./utils.js")
 
 const app = express()
 
@@ -14,11 +14,13 @@ app.use(
 
 app.use(express.json())
 
+const payments = []
+let grid = generateEmptyGrid() 
 let bias = ""
 let code = 0
 
 app.get("/grid", (req, res) => {
-  const grid = generateGrid(bias)
+  grid = generateGrid(bias)
   code = getSecretCode(grid)
 
   res.json(JSON.stringify(grid))
@@ -32,6 +34,25 @@ app.post("/bias", (req, res) => {
   bias = req.body.bias
 
   res.json({})
+})
+
+app.post("/payment", (req, res) => {
+  const { payment, amount } = req.body 
+
+  const newPayment = {
+    payment,
+    amount,
+    grid,
+    code
+  }
+
+  payments.push(newPayment)
+
+  res.json(JSON.stringify(newPayment))
+})
+
+app.get("/payments", (req, res) => {
+  res.json(JSON.stringify(payments))
 })
 
 app.listen(PORT, () => {

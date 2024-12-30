@@ -18,11 +18,23 @@ const payments = []
 let grid = generateEmptyGrid() 
 let bias = ""
 let code = 0
+let generatorInterval = 0
 
-app.get("/grid", (req, res) => {
+app.get("/generator", (req, res) => {
+  clearInterval(generatorInterval)  
+
   grid = generateGrid(bias)
   code = getSecretCode(grid)
 
+  generatorInterval = setInterval(() => {
+    grid = generateGrid(bias)
+    code = getSecretCode(grid)
+  }, 2000)
+
+  res.json(JSON.stringify(grid))
+})
+
+app.get("/grid", (req, res) => {
   res.json(JSON.stringify(grid))
 })
 

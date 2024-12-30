@@ -23,6 +23,9 @@ const Payments = () => {
     
     const newPayment= await savePayment(payment, amount)
     setPayments(prev => [...prev, newPayment])
+
+    setPayment("")
+    setAmount("")
   }
 
   function updateAmount(e: any) {
@@ -37,9 +40,17 @@ const Payments = () => {
       setPayments(savedPayments) 
     })
 
-    setInterval(async () => {
+    getSecretCode().then((code) => {
+      setCode(code)
+    })
+
+    const secretCodeInterval = setInterval(async () => {
       setCode(await getSecretCode())
     }, 2000)
+
+    return () => {
+      clearInterval(secretCodeInterval)
+    }
   }, [])
 
   return <div className="container">

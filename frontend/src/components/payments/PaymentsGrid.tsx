@@ -17,9 +17,9 @@ const PaymentsGrid = ({ payments }: Props) => {
     </thead>
     <tbody>
     {
-      payments.map((payment) => {
+      payments.map((payment, i) => {
         return (
-         <tr>
+         <tr key={i}>
           <td>{payment.payment}</td>
           <td>{payment.amount}</td>
           <td>{payment.code}</td>

@@ -15,6 +15,14 @@ export async function setBias(bias: string) {
   }
 }
 
+export async function startGenerator() {
+  try {
+    await fetch(`${import.meta.env.VITE_BACKEND_URL}/generator`) 
+  } catch(e) {
+    console.error(e)
+  }
+}
+
 export async function getGrid() {
   try {
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/grid`) 

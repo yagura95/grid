@@ -1,6 +1,6 @@
 import "./Homepage.css"
 import { useState } from "react"
-import { setBias, getGrid, getSecretCode } from "../../services.tsx"
+import { setBias, getGrid, getSecretCode, startGenerator } from "../../services.tsx"
 import { generateEmptyGrid } from "../../utils.tsx"
 
 import Header from "./Header.tsx"
@@ -20,7 +20,8 @@ function Homepage() {
     setCode(newCode)
   }
 
-  function generate() {
+  async function generate() {
+    await startGenerator() 
     generateGrid()
 
     setInterval(() => {

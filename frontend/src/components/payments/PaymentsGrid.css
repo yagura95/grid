@@ -7,9 +7,15 @@
   border-radius: 5px;
 }
 
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
 th {
   text-align: center; 
   padding: 10px 10px;
+  color: var(--light-grey);
 }
 
 th:first-child {

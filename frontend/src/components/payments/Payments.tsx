@@ -13,10 +13,7 @@ const Payments = () => {
   const [amount, setAmount] = useState<string>("")
 
   function updatePayment(e: any) {
-    const value = e.target.value
-    if(!value.match("^[0-9]*$")) return setPayment("")
-
-    setPayment(value)
+    setPayment(e.target.value)
   }
 
   async function addPayment(e: any) {

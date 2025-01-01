@@ -1,0 +1,52 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 50px;
+}
+
+.header-item {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column; 
+}
+
+#secret-code-label {
+  margin-bottom: 10px;
+  font-size: 0.7rem;
+  color: var(--light-grey);
+  font-weight: 600;
+}
+
+#secret-code-input {
+  width: 50%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid var(--light-grey);
+}
+
+#secret-code-input::placeholder {
+  color: var(--light-grey);
+}
+
+#clock {
+  width: 50px;
+}
+
+#generate-btn {
+  outline: none;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  color: var(--white);
+  background-color: var(--light-grey);
+  font-weight: 600; 
+}
+
+#generate-btn:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+#generate-btn:active {
+  opacity: 0.6;
+}

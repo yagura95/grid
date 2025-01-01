@@ -1,0 +1,18 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(5%, auto));
+  grid-gap: 1px;
+  background-color: var(--grey); 
+  border: 1px solid var(--grey);
+  margin-bottom: 50px;
+}
+
+.grid-item {
+  width: 100%;
+  height: 50px;
+  padding: 5px;
+  background-color: var(--white);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

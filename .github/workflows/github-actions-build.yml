@@ -1,0 +1,39 @@
+name: Trigger frontend build
+on:
+  push:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20.x'
+  FRONTEND_PATH: 'frontend'  
+  BUILD_OUTPUT_PATH: 'frontend/dist'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.FRONTEND_PATH }}/package-lock.json
+          
+      - name: Install frontend dependencies
+        working-directory: ${{ env.FRONTEND_PATH }}
+        run: npm install
+        
+      - name: Build frontend
+        working-directory: ${{ env.FRONTEND_PATH }}
+        run: npm run build
+        
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: ${{ env.BUILD_OUTPUT_PATH }}

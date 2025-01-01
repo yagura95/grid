@@ -24,7 +24,7 @@ function App() {
     }, 2000)
   }
 
-  function updateChar(e) {
+  function updateChar(e: any) {
     const value = e.target.value
 
     if(!value.match("[a-z ]")) return setChar("")

@@ -3,6 +3,7 @@ backend/node_modules
 
 frontend/build
 frontend/dist
+frontend/.env
 notes
 
 frontend/yarn-debug.log*

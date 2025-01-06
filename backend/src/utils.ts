@@ -1,28 +1,32 @@
-const { GRID_ROWS, GRID_COLUMNS, BIAS_PERCENT } = require("./constants.js")
+import { Grid } from "./interface.ts"
 
-function generateRandomNumber(min, max) {
+const GRID_ROWS: number = parseInt(process.env.GRID_ROWS!)
+const GRID_COLUMNS: number = parseInt(process.env.GRID_COLUMNS!)
+const BIAS_PERCENT: number = parseInt(process.env.BIAS_PERCENT!)
+
+function generateRandomNumber(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-function generateRandomChar() {
+function generateRandomChar(): string {
   const min = 97  // ascii lowercase a 
   const max = 122 // ascii lowercase z
 
   return String.fromCharCode(generateRandomNumber(min, max))
 }
 
-function generateEmptyGrid(numRows, numColumns) {
+export function generateEmptyGrid(): Grid {
   const grid = [] 
 
-  for(let i = 0; i < numRows; i++) {
-    grid.push(new Array(numColumns).fill("")) 
+  for(let i = 0; i < GRID_ROWS; i++) {
+    grid.push(new Array(GRID_COLUMNS).fill("")) 
   }
 
   return grid
 }
 
-function insertGridBias(grid, bias) {
-  let biasCount = GRID_ROWS * GRID_COLUMNS * BIAS_PERCENT 
+function insertGridBias(grid: Grid, bias: string): void {
+  let biasCount: number = GRID_ROWS * GRID_COLUMNS * BIAS_PERCENT
 
   while(biasCount > 0) {
     const row = generateRandomNumber(0, GRID_ROWS - 1) 
@@ -35,8 +39,8 @@ function insertGridBias(grid, bias) {
   }
 }
 
-function generateGrid(bias) {
-  const grid = generateEmptyGrid(GRID_ROWS, GRID_COLUMNS)
+export function generateGrid(bias: string): Grid {
+  const grid = generateEmptyGrid()
 
   if(bias) {
     insertGridBias(grid, bias)
@@ -59,7 +63,7 @@ function generateGrid(bias) {
   return grid
 }
 
-function normalizeValue(count) {
+function normalizeValue(count: number): number {
   if(count < 10) return count
 
   const n = count.toString()
@@ -72,7 +76,7 @@ function normalizeValue(count) {
   return count / divisor 
 }
 
-function getSecretCode(grid) {
+export function getSecretCode(grid: Grid): number {
   if(grid[0][0] === "") return 0 
 
   const seconds = new Date().getSeconds().toString().padStart(2, "0")
@@ -99,11 +103,3 @@ function getSecretCode(grid) {
   return firstLetterCount * 10 + secondLetterCount
 }
 
-module.exports = {
- generateRandomNumber, 
- generateRandomChar,
- generateEmptyGrid,
- generateGrid, 
- insertGridBias,
- getSecretCode
-}

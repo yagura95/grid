@@ -11,4 +11,5 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 backend/yarn-error.log*
 backend/.env
+backend/dist
 volumes/*

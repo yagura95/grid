@@ -1,11 +1,16 @@
-const express = require("express")
-const cors = require('cors')
-const { PORT, TOKEN } = require("./constants.js")
-const { createServer } = require("http")
-const { Server } = require("socket.io")
-const { generateGrid, generateEmptyGrid, getSecretCode } = require("./utils.js")
+import express, { Express, Request, Response } from "express"
+import dotenv from 'dotenv'
+import cors from 'cors'
+import { createServer } from "http"
+import { Server } from "socket.io"
+import { generateGrid, generateEmptyGrid, getSecretCode } from "./utils.ts"
+import { Payment } from "./interface.ts"
 
-const app = express()
+dotenv.config();
+
+const port = process.env.PORT
+
+const app: Express = express()
 app.use(
     cors({
         origin: true,
@@ -16,7 +21,10 @@ app.use(
 app.use(express.json())
 
 const httpServer = createServer(app);
-const io = new Server(httpServer, { cors: true });
+const io = new Server(httpServer, { cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }});
 
 io.use((socket, next) => {
     const token = socket.handshake.auth.token;
@@ -29,18 +37,18 @@ io.use((socket, next) => {
         // Validation logic
         // Not a normal/correct way to it, but since there is no login panel
         // this was a simple way to show I can implement it 
-        if(token !== TOKEN) new Error("Invalid token")
+        if(token !== process.env.TOKEN) new Error("Invalid token")
         next();
     } catch (err) {
         next(new Error('Invalid token'));
     }
 });
 
-const payments = []
+const payments: Payment[] = []
 let grid = generateEmptyGrid() 
 let bias = ""
 let code = 0
-let generatorTimeout = 0
+let generatorTimeout: ReturnType<typeof setTimeout> | number = 0 
 
 function generate() {
   grid = generateGrid(bias)
@@ -66,31 +74,31 @@ io.on('connection', (socket) => {
     });
 });
 
-app.get("/generator", (req, res) => {
+app.get("/generator", (req: Request, res: Response): any => {
   if(generatorTimeout) return res.json({})
 
   generate()
   res.json({})
 })
 
-app.get("/grid", (req, res) => {
+app.get("/grid", (req: Request, res: Response) => {
   res.json(JSON.stringify(grid))
 })
 
-app.get("/code", (req, res) => {
+app.get("/code", (req: Request, res: Response) => {
   res.json(JSON.stringify(code))
 })
 
-app.post("/bias", (req, res) => {
+app.post("/bias", (req: Request, res: Response) => {
   bias = req.body.bias
   io.emit("NEW_BIAS", { bias })
   res.json({})
 })
 
-app.post("/payment", (req, res) => {
+app.post("/payment", (req: Request, res: Response) => {
   const { payment, amount } = req.body 
 
-  const newPayment = {
+  const newPayment: Payment = {
     payment,
     amount,
     grid,
@@ -103,10 +111,10 @@ app.post("/payment", (req, res) => {
   res.json(JSON.stringify(newPayment))
 })
 
-app.get("/payments", (req, res) => {
+app.get("/payments", (req: Request, res: Response) => {
   res.json(JSON.stringify(payments))
 })
 
-httpServer.listen(PORT, () => {
-  console.log("Server running on port %s", PORT)
+httpServer.listen(port, () => {
+  console.log("Server running on port %s", port)
 })

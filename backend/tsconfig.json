@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2016",                                      
+    "module": "commonjs",                                
+    "outDir": "./dist",
+    "baseUrl": "./",                                  
+    "paths": {
+      "@services/*": ["src/services/*"]
+    },
+    "esModuleInterop": true,                             
+    "forceConsistentCasingInFileNames": true,            
+    "strict": true,                                 
+    "skipLibCheck": true,                   
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "allowImportingTsExtensions": true
+  }
+}

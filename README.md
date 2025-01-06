@@ -1,30 +1,46 @@
 # Description  
+Complete grid application with proper environment setup, development dependencies and scripts and CI/CD.  
+Uses redis for fast and non persistent in memory data (grid information) and mariadb for persistent storage(payments).
+
 ## Prerequisites
+- Docker 
 - Node.js 20.x or later
 
 ## Pages
 - "/": Random grid generator with or without a bias factor(a character choosen by the user(s)), which refreshes every two seconds. Contains a secret code generated.
 - "/payments": Payments added by the user(s). Also contains the secret code.
 
+## Scripts  
+### docker-control 
+Helper script to control docker envs and commands.  
+It can be run with one of two environments(required): dev or prod.  
+
+Examples: 
+- start dev env: ```bash ./docker-control.sh dev up```
+- stop dev env: ```bash ./docker-control.sh dev down```
+- start prod env: ```bash ./docker-control.sh prod up```
+- stop prod env: ```bash ./docker-control.sh dev down```
+- restart: ```bash ./docker-control.sh dev restart```
+- logs: ```bash ./docker-control.sh dev logs```
+- logs frontend: ```bash ./docker-control.sh dev logs frontend -f```
+- container shell: ```bash ./docker-control.sh dev bash frontend```
+
+### setup-envs.sh
+Script that copies .env.example files to .env files across entire project. Must be executed from root folder.
+```bash
+./scripts/setup-envs.sh
+```
+
+### frontend.dev.sh && backend.dev.sh
+Commands executed when docker containers start.
+
 ## Local Development Setup
-1. Set up environment variables:
-```bash
-cd frontend
-cp .env.example .env
 ```
+./scripts/setup-envs.sh
 
-2. Install frontend dependencies and start dev server:
-```bash
-cd frontend
-yarn install
-yarn dev
-```
+# change variables in .env files as needed
 
-3. Install backend dependencies and start dev server:
-```bash
-cd backend
-yarn install
-yarn dev
+./docker-control.sh dev up
 ```
 
 ## Environment Variables

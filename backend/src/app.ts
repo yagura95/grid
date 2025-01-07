@@ -12,6 +12,8 @@ import * as redis from "./utils/redis"
 import { connectRedis } from "./redis"
 import { addPayment, getAllPayments, initDB } from "./db"
 
+import { authentication }from "./socket"
+
 
 const port = process.env.BACKEND_PORT
 
@@ -31,23 +33,7 @@ const io = new Server(httpServer, { cors: {
     methods: ["GET", "POST"]
   }});
 
-io.use((socket, next) => {
-    const token = socket.handshake.auth.token;
-    
-    if (!token) {
-        return next(new Error('Authentication token required'));
-    }
-
-    try {
-        // Validation logic
-        // Not a normal/correct way to it, but since there is no login panel
-        // this was a simple way to show I can implement it 
-        if(token !== process.env.TOKEN) new Error("Invalid token")
-        next();
-    } catch (err) {
-        next(new Error('Invalid token'));
-    }
-});
+io.use(authentication);
 
 let generatorTimeout: ReturnType<typeof setTimeout> | number = 0 
 

@@ -14,11 +14,11 @@ const Payments = () => {
   const [payment, setPayment] = useState<string>("")
   const [amount, setAmount] = useState<string>("")
 
-  function updatePayment(e: any) {
+  function updatePayment(e: React.ChangeEvent<HTMLInputElement>) {
     setPayment(e.target.value)
   }
 
-  async function addPayment(e: any) {
+  async function addPayment(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
     if(!payment || !amount) return 
@@ -29,7 +29,7 @@ const Payments = () => {
     setAmount("")
   }
 
-  function updateAmount(e: any) {
+  function updateAmount(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value
     if(!value.match("^[0-9]*$")) return setAmount("")
 

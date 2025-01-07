@@ -1,0 +1,9 @@
+**/dist
+**/.git
+**/node_modules
+**/docs
+**/tests
+**/public
+**/*.stories.*
+**/components/screensaver/lotties
+**/animations

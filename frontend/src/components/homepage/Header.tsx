@@ -1,7 +1,7 @@
 import "./Header.css"
 
 interface Props {
-  updateChar: (e: any) => void,
+  updateChar: (e: React.ChangeEvent<HTMLInputElement>) => void,
   generate: () => void,
   char: string,
 }

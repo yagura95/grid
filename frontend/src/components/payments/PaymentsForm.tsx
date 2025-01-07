@@ -3,9 +3,9 @@ import "./PaymentsForm.css"
 interface Props {
   payment: string,
   amount: string,
-  updatePayment: (e: any) => void, 
-  updateAmount: (e: any) => void, 
-  addPayment: (e: any) => void,
+  updatePayment: (e: React.ChangeEvent<HTMLInputElement>) => void, 
+  updateAmount: (e: React.ChangeEvent<HTMLInputElement>) => void, 
+  addPayment: (e: React.FormEvent<HTMLFormElement>) => void,
 }
 
 const PaymentsForm = ({ payment, updatePayment, amount, updateAmount, addPayment }: Props) => {

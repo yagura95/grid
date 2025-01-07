@@ -13,18 +13,19 @@ function Homepage() {
   const [char, setChar] = useState<string>("")
   const [code, setCode] = useState<number>(0)
 
-  function updateChar(e: any) {
-    const value = e.target.value
+  function updateChar(e: React.ChangeEvent<HTMLInputElement>) {
+    const target = e.target as HTMLInputElement
+    const value = target.value 
 
     if(!value.match("[a-z ]")) return setChar("")
 
     setChar(value) 
     setBias(value)
 
-    e.target.disabled = true
+    target.disabled = true
 
     setTimeout(() => {
-      e.target.disabled = false
+      target.disabled = false
     }, 4000)
   }
 

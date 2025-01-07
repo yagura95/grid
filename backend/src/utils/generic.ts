@@ -2,13 +2,13 @@ import { Grid } from "../types"
 
 const GRID_ROWS: number = parseInt(process.env.GRID_ROWS!)
 const GRID_COLUMNS: number = parseInt(process.env.GRID_COLUMNS!)
-const BIAS_PERCENT: number = parseInt(process.env.BIAS_PERCENT!)
+const BIAS_PERCENT: number = parseFloat(process.env.BIAS_PERCENT!)
 
-function generateRandomNumber(min: number, max: number): number {
+export function generateRandomNumber(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-function generateRandomChar(): string {
+export function generateRandomChar(): string {
   const min = 97  // ascii lowercase a 
   const max = 122 // ascii lowercase z
 
@@ -25,7 +25,7 @@ export function generateEmptyGrid(): Grid {
   return grid
 }
 
-function insertGridBias(grid: Grid, bias: string): void {
+export function insertGridBias(grid: Grid, bias: string): void {
   let biasCount: number = GRID_ROWS * GRID_COLUMNS * BIAS_PERCENT
 
   while(biasCount > 0) {
@@ -45,7 +45,6 @@ export function generateGrid(bias: string): Grid {
   if(bias) {
     insertGridBias(grid, bias)
   }
-
   for(let row = 0; row < GRID_ROWS; row++) {
     for(let col = 0; col < GRID_COLUMNS; col++) {
       if(grid[row]?.[col]) continue 
@@ -63,7 +62,7 @@ export function generateGrid(bias: string): Grid {
   return grid
 }
 
-function normalizeValue(count: number): number {
+export function normalizeValue(count: number): number {
   if(count < 10) return count
 
   const n = count.toString()

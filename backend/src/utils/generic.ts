@@ -86,7 +86,7 @@ export function getSecretCode(grid: Grid): number {
   const firstLetter = grid[i]?.[j]
   const secondLetter = grid[j]?.[i]
 
-  if(!firstLetter || secondLetter) return 0
+  if(!firstLetter || !secondLetter) return 0
 
   let firstLetterCount = 0
   let secondLetterCount = 0

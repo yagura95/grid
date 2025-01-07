@@ -1,14 +1,19 @@
-import express, { Express, Request, Response } from "express"
 import dotenv from 'dotenv'
+dotenv.config();
+import express, { Express, Request, Response } from "express"
+import { Payment } from "./types"
 import cors from 'cors'
 import { createServer } from "http"
 import { Server } from "socket.io"
-import { generateGrid, generateEmptyGrid, getSecretCode } from "./utils.ts"
-import { Payment } from "./interface.ts"
 
-dotenv.config();
+import { generateGrid, generateEmptyGrid, getSecretCode } from "./utils/generic"
+import * as redis from "./utils/redis"
 
-const port = process.env.PORT
+import { connectRedis } from "./redis"
+import { addPayment, getAllPayments, initDB } from "./db"
+
+
+const port = process.env.BACKEND_PORT
 
 const app: Express = express()
 app.use(
@@ -44,15 +49,16 @@ io.use((socket, next) => {
     }
 });
 
-const payments: Payment[] = []
-let grid = generateEmptyGrid() 
-let bias = ""
-let code = 0
 let generatorTimeout: ReturnType<typeof setTimeout> | number = 0 
 
-function generate() {
-  grid = generateGrid(bias)
-  code = getSecretCode(grid)
+async function generate() {
+  const bias = await redis.getBias();
+  const grid = generateGrid(bias)
+  const code = getSecretCode(grid)
+
+  await redis.setGrid(grid);
+  await redis.setCode(code);
+
   io.emit("NEW_GRID", { grid, code, bias })
 
   generatorTimeout = setTimeout(() => {
@@ -63,8 +69,14 @@ function generate() {
 io.on('connection', (socket) => {
     console.log(`User ${socket.id} connected`); 
 
-    socket.on("GENERATOR_CHECK", () => {
+    socket.on("GENERATOR_CHECK", async () => {
       if(!generatorTimeout) return 
+      
+      const [grid, code, bias] = await Promise.all([
+        redis.getGrid(),
+        redis.getCode(),
+        redis.getBias(),
+      ])
 
       socket.emit("GENERATOR_START", { grid, code, bias })
     })
@@ -81,22 +93,31 @@ app.get("/generator", (req: Request, res: Response): any => {
   res.json({})
 })
 
-app.get("/grid", (req: Request, res: Response) => {
-  res.json(JSON.stringify(grid))
+app.get("/grid", async (req: Request, res: Response) => {
+  res.json(JSON.stringify(await redis.getGrid()))
 })
 
-app.get("/code", (req: Request, res: Response) => {
-  res.json(JSON.stringify(code))
+app.get("/code", async (req: Request, res: Response) => {
+  res.json(JSON.stringify(await redis.getCode()))
 })
 
-app.post("/bias", (req: Request, res: Response) => {
-  bias = req.body.bias
+app.post("/bias", async (req: Request, res: Response) => {
+  const bias = req.body.bias
+  await redis.setBias(bias)
   io.emit("NEW_BIAS", { bias })
   res.json({})
 })
 
-app.post("/payment", (req: Request, res: Response) => {
+app.post("/payment", async (req: Request, res: Response) => {
   const { payment, amount } = req.body 
+  // show users payments are being updated
+  io.emit("PAYMENT_UPDATE")
+
+  const [payments, grid, code] = await Promise.all([
+    redis.getPayments(),
+    redis.getGrid(),
+    redis.getCode(),
+  ])
 
   const newPayment: Payment = {
     payment,
@@ -105,16 +126,35 @@ app.post("/payment", (req: Request, res: Response) => {
     code
   }
 
+  await addPayment(newPayment)
   payments.push(newPayment)
+  await redis.setPayments(payments)
 
+  // update users payments 
   io.emit("NEW_PAYMENT", payments)
   res.json(JSON.stringify(newPayment))
 })
 
-app.get("/payments", (req: Request, res: Response) => {
-  res.json(JSON.stringify(payments))
+app.get("/payments", async (req: Request, res: Response) => {
+  res.json(JSON.stringify(await redis.getPayments()))
 })
 
-httpServer.listen(port, () => {
-  console.log("Server running on port %s", port)
-})
+async function main() {
+  await connectRedis()
+  await initDB()
+
+  const payments = await getAllPayments()
+
+  await Promise.all([
+    redis.setPayments(payments),
+    redis.setGrid(generateEmptyGrid()),
+    redis.setCode(0),
+    redis.setBias(""),
+  ])
+  
+  httpServer.listen(port, () => {
+    console.log("Server running on port %s", port)
+  })
+}
+
+main()

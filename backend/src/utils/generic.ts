@@ -1,4 +1,4 @@
-import { Grid } from "./interface.ts"
+import { Grid } from "../types"
 
 const GRID_ROWS: number = parseInt(process.env.GRID_ROWS!)
 const GRID_COLUMNS: number = parseInt(process.env.GRID_COLUMNS!)
@@ -32,8 +32,8 @@ function insertGridBias(grid: Grid, bias: string): void {
     const row = generateRandomNumber(0, GRID_ROWS - 1) 
     const col = generateRandomNumber(0, GRID_COLUMNS - 1) 
 
-    if(!grid[row][col]) {
-      grid[row][col] = bias
+    if(!grid?.[row]?.[col]) {
+      grid[row]![col] = bias
       biasCount--
     } 
   }
@@ -48,7 +48,7 @@ export function generateGrid(bias: string): Grid {
 
   for(let row = 0; row < GRID_ROWS; row++) {
     for(let col = 0; col < GRID_COLUMNS; col++) {
-      if(grid[row][col]) continue 
+      if(grid[row]?.[col]) continue 
 
       let char = generateRandomChar()
 
@@ -56,7 +56,7 @@ export function generateGrid(bias: string): Grid {
         char = generateRandomChar()
       }
 
-      grid[row][col] = char
+      grid[row]![col] = char
     }
   }
 
@@ -67,7 +67,7 @@ function normalizeValue(count: number): number {
   if(count < 10) return count
 
   const n = count.toString()
-  let divisor = parseInt(n[0]) + 1
+  let divisor = parseInt(n[0]!) + 1
   
   while(count % divisor !== 0) {
     divisor++
@@ -77,21 +77,23 @@ function normalizeValue(count: number): number {
 }
 
 export function getSecretCode(grid: Grid): number {
-  if(grid[0][0] === "") return 0 
+  if(grid.length < 1 || grid[0]?.[0] === "") return 0 
 
   const seconds = new Date().getSeconds().toString().padStart(2, "0")
 
-  const i = parseInt(seconds[0])
-  const j = parseInt(seconds[1])
+  const i = parseInt(seconds[0]!)
+  const j = parseInt(seconds[1]!)
   
-  const firstLetter = grid[i][j]
-  const secondLetter = grid[j][i]
+  const firstLetter = grid[i]?.[j]
+  const secondLetter = grid[j]?.[i]
+
+  if(!firstLetter || secondLetter) return 0
 
   let firstLetterCount = 0
   let secondLetterCount = 0
 
   grid.forEach((row) => {
-    row.forEach((letter)=> {
+    row.forEach((letter): number | void => {
       if(letter === firstLetter)  return firstLetterCount++
       if(letter === secondLetter) return secondLetterCount++
     })

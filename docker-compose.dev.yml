@@ -7,8 +7,17 @@ services:
     networks:
       - internal
     ports:
-      - ${REDIS_PORT}:3306
+      - ${REDIS_PORT}:6379
     restart: always
+    volumes: 
+      - ./volumes/redis-data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   mariadb:
     container_name: grid_mariadb
@@ -42,8 +51,6 @@ services:
       - redis 
     ports:
       - ${BACKEND_PORT}:4000
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     restart: always
     volumes:
       - ./backend:/app

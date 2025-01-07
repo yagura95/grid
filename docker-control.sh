@@ -41,6 +41,10 @@ then
 elif [ "$COMMAND" = "bash" ]
 then
   $COMPOSE_EXECUTABLE -f docker-compose.$ENV.yml exec $3 bash
+elif [ "$COMMAND" = "test" ]
+  $COMPOSE_EXECUTABLE -f docker-compose.$ENV.yml exec -T $3 npm run test
+then
+  $COMPOSE_EXECUTABLE -f docker-compose.$ENV.yml exec $3 bash
 elif [ "$COMMAND" = "logs" ]
 then
   $COMPOSE_EXECUTABLE -f docker-compose.$ENV.yml logs $3 $4 $5 $6 $7 $8 $9

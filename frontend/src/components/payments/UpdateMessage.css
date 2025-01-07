@@ -1,0 +1,9 @@
+.message {
+  width: 100%;
+  height: 20px;
+  text-align: center;
+  font-size: 1.3rem;
+  color: orange;
+  font-weight: 600;
+  margin-top: 20px;
+}

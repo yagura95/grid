@@ -32,26 +32,19 @@ function Homepage() {
   useEffect(() => {
     socket.emit("GENERATOR_CHECK")
 
-    socket.on("GENERATOR_START", ({ grid, code, bias }) => {
+    socket.on("GENERATOR_STATE", ({ grid, code, bias }) => {
       setGrid(grid)
       setCode(code)
       setChar(bias)
     })
 
-    socket.on("NEW_GRID", ({ grid, code, bias }) => {
-      setGrid(grid)
-      setCode(code)
-      setChar(bias)
-    })
-
-    socket.on("NEW_BIAS", ({ bias }) => {
+    socket.on("BIAS", ({ bias }) => {
       setChar(bias)
     })
     
     return () => {
-      socket.off("GENERATOR_START")
-      socket.off("NEW_GRID")
-      socket.off("NEW_BIAS")
+      socket.off("GENERATOR_STATE")
+      socket.off("BIAS")
     }
   }, [])
 

@@ -41,11 +41,12 @@ async function generate() {
   const bias = await redis.getBias();
   const grid = generateGrid(bias)
   const code = getSecretCode(grid)
+  console.log(code)
 
   await redis.setGrid(grid);
   await redis.setCode(code);
 
-  io.emit("NEW_GRID", { grid, code, bias })
+  io.emit("GENERATOR_STATE", { grid, code, bias })
 
   generatorTimeout = setTimeout(() => {
     generate()
@@ -64,66 +65,52 @@ io.on('connection', (socket) => {
         redis.getBias(),
       ])
 
-      socket.emit("GENERATOR_START", { grid, code, bias })
+      socket.emit("GENERATOR_STATE", { grid, code, bias })
+    })
+
+    socket.on("GENERATOR_START", async () => {
+      if(generatorTimeout) return 
+      generate()
+    })
+
+    socket.on("BIAS", async ({ bias }) => {
+      await redis.setBias(bias)
+      io.emit("BIAS", { bias })
+    })
+
+    socket.on("PAYMENT", async ({ payment, amount }) => {
+      io.emit("PAYMENT_UPDATE")
+
+      const [payments, grid, code] = await Promise.all([
+        redis.getPayments(),
+        redis.getGrid(),
+        redis.getCode(),
+      ])
+
+      const newPayment: Payment = {
+        payment,
+        amount,
+        grid,
+        code
+      }
+
+      await addPayment(newPayment)
+      payments.push(newPayment)
+      await redis.setPayments(payments)
+
+      // update users payments 
+      io.emit("PAYMENTS", payments)
+    })
+
+    socket.on("PAYMENTS", async () => {
+      const payments = await redis.getPayments()
+      io.emit("PAYMENTS", payments)
     })
 
     socket.on('disconnect', () => {
         console.log(`User ${socket.id} disconnected`);
     });
 });
-
-app.get("/generator", (req: Request, res: Response): any => {
-  if(generatorTimeout) return res.json({})
-
-  generate()
-  res.json({})
-})
-
-app.get("/grid", async (req: Request, res: Response) => {
-  res.json(JSON.stringify(await redis.getGrid()))
-})
-
-app.get("/code", async (req: Request, res: Response) => {
-  res.json(JSON.stringify(await redis.getCode()))
-})
-
-app.post("/bias", async (req: Request, res: Response) => {
-  const bias = req.body.bias
-  await redis.setBias(bias)
-  io.emit("NEW_BIAS", { bias })
-  res.json({})
-})
-
-app.post("/payment", async (req: Request, res: Response) => {
-  const { payment, amount } = req.body 
-  // show users payments are being updated
-  io.emit("PAYMENT_UPDATE")
-
-  const [payments, grid, code] = await Promise.all([
-    redis.getPayments(),
-    redis.getGrid(),
-    redis.getCode(),
-  ])
-
-  const newPayment: Payment = {
-    payment,
-    amount,
-    grid,
-    code
-  }
-
-  await addPayment(newPayment)
-  payments.push(newPayment)
-  await redis.setPayments(payments)
-
-  // update users payments 
-  io.emit("NEW_PAYMENT", payments)
-  res.json(JSON.stringify(newPayment))
-})
-
-app.get("/payments", async (req: Request, res: Response) => {
-  res.json(JSON.stringify(await redis.getPayments()))
-})
 
 async function main() {
   await connectRedis()

@@ -2,14 +2,16 @@ import { useEffect, useState } from "react"
 
 import { Payment } from "../../Interfaces.ts"
 import { socket } from "../../services/socket.ts"
-import { getSecretCode, savePayment, getPayments } from "../../services"
+import { savePayment, getPayments } from "../../services"
 
 import SecretCode from "../homepage/SecretCode"
 import PaymentsForm from "./PaymentsForm.tsx"
 import PaymentsGrid from "./PaymentsGrid.tsx"
+import UpdateMessage from "./UpdateMessage.tsx"
 
 const Payments = () => {
   const [code, setCode] = useState<number>(0)
+  const [paymentUpdate, setPaymentUpdate] = useState<boolean>(false)
   const [payments, setPayments] = useState<Payment[]>([])
   const [payment, setPayment] = useState<string>("")
   const [amount, setAmount] = useState<string>("")
@@ -37,30 +39,31 @@ const Payments = () => {
   }
 
   useEffect(() => {
-    getPayments().then(savedPayments => {
-      setPayments(savedPayments) 
-    })
+    getPayments()
 
-    getSecretCode().then((code) => {
-      setCode(code)
-    })
-
-    socket.on("NEW_GRID", ({ code }) => {
-      setCode(code)
-    })
-
-    socket.on("NEW_PAYMENT", (payments) =>  {
+    socket.on("PAYMENTS", (payments) => {
       setPayments(payments)
+      setPaymentUpdate(false)
+    })
+
+    socket.on("PAYMENT_UPDATE", () => {
+      setPaymentUpdate(true)
+    })
+
+    socket.on("GENERATOR_STATE", ({ code }) => {
+      setCode(code)
     })
 
     return () => {
-      socket.off("NEW_GRID")
+      socket.off("PAYMENTS")
+      socket.off("GENERATOR_STATE")
       socket.off("NEW_PAYMENT")
     }
   }, [])
 
   return <div className="container">
     <SecretCode code={code}/>
+    <UpdateMessage update={paymentUpdate}/>
     <PaymentsForm 
       payment={payment} 
       updatePayment={updatePayment} 

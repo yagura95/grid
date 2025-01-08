@@ -1,0 +1,40 @@
+name: pull_request_test
+
+on:
+  pull_request:
+    branches: [ test-ci ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up docker
+      uses: docker/setup-buildx-action@v2
+
+    - name: Cache docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.cache
+        key: ${{ runner.os }}-build-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+
+    - name: Start services 
+      run: |
+        ./docker-control dev up 
+
+    - name: Wait for services to be ready
+      run: |
+        sleep 30
+
+    - name: Run Backend Tests
+      run: ./docker-control dev test backend
+
+    - name: Run Frontend Tests
+      run: ./docker-control dev test frontend
+
+    - name: Stop services
+      if: always()
+      run: ./docker-control dev down 

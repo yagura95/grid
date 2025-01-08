@@ -63,7 +63,7 @@ jobs:
 
     - name: Start services 
       run: |
-        ./docker-control prod build
+        ./docker-control prod up 
 
     - name: Wait for services to be ready
       run: |

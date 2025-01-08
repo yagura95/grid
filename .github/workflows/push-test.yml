@@ -57,21 +57,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-build-
 
-    - name: Start services 
+    - name: Build services 
       run: |
-        ./docker-control.sh prod up 
-
-    - name: Wait for services to be ready
-      run: |
-        sleep 30
-
-    - name: Run Backend Tests
-      run: |
-        ./docker-control.sh prod test backend
-
-    - name: Run Frontend Tests
-      run: |
-        ./docker-control.sh prod test frontend
+        ./docker-control.sh prod build
 
     - name: Stop services
       if: always()

@@ -1,8 +1,8 @@
-name: push_test
+name: push
 
 on:
   push:
-    branches: [ test-ci ]
+    branches: [ main ]
 
 jobs:
   test:

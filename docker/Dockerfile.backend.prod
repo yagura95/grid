@@ -2,12 +2,12 @@ FROM node:20 AS build
 
 WORKDIR /app
 
+RUN apt update && apt upgrade -y
+
 COPY /backend /app
-COPY /backend/node_modules /app/node_modules
 COPY /backend/ecosystem.config.js /app/ecosystem.config.js
 COPY /scripts /scripts
 
-RUN apt update && apt upgrade -y
 RUN yarn install
 RUN yarn build
 

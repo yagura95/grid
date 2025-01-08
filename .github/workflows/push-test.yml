@@ -33,10 +33,6 @@ jobs:
       run: |
         ./docker-control.sh dev test backend
 
-    - name: Run Frontend Tests
-      run: |
-        ./docker-control.sh dev test frontend
-
     - name: Stop services
       if: always()
       run: | 

@@ -36,6 +36,8 @@ function Homepage() {
       setGrid(grid)
       setCode(code)
       setChar(bias)
+
+      console.log("GENERATOR_START", { grid, code, bias })
     })
 
     socket.on("BIAS", ({ bias }) => {

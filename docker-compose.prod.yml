@@ -29,11 +29,11 @@ services:
   backend:
     container_name: grid_backend
     build: 
-      context: ./docker
-      dockerfile: Dockerfile.backend
+      context: ./
+      dockerfile: ./docker/Dockerfile.backend.prod
     env_file:
       - .env
-    command: /scripts/containers/backend.dev.sh
+    command: /scripts/backend.prod.sh
     privileged: true
     networks:
       - internal
@@ -44,20 +44,19 @@ services:
       - ${BACKEND_PORT}:4000
     restart: always
     volumes:
-      - ./backend:/app
-      - ./scripts:/scripts
+      - ./volumes/logs-backend/:/app/logs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
   frontend:
     container_name: grid_frontend
     build: 
-      context: ./docker
-      dockerfile: Dockerfile.frontend
+      context: ./
+      dockerfile: ./docker/Dockerfile.frontend.prod
     user: node
     env_file:
       - .env
-    command: /scripts/containers/frontend.dev.sh
+    command: /scripts/frontend.prod.sh
     depends_on:
       - backend
     networks:
@@ -65,8 +64,7 @@ services:
     ports:
       - ${FRONTEND_PORT}:5173
     volumes:
-      - ./frontend:/app
-      - ./scripts:/scripts
+      - ./volumes/logs-frontend/:/app/logs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     restart: always

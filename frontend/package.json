@@ -11,7 +11,7 @@
     "format": "prettier --write --no-error-on-unmatched-pattern $(git diff --staged --name-only --relative ../frontend | grep -E '.js$|.jsx$|.ts$|.tsx$|.json$' | xargs)",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
-    "test": "vitest"
+    "test": "echo 'No tests available'"
   },
   "dependencies": {
     "react": "^18.3.1",

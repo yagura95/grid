@@ -1,8 +1,8 @@
-export type Grid = string[][]
+export type Grid = string[][];
 
 export interface Payment {
-    payment: string,
-    amount: string,
-    grid: Grid,
-    code: number
+  payment: string;
+  amount: string;
+  grid: Grid;
+  code: number;
 }

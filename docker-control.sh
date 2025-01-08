@@ -10,7 +10,7 @@ fi
 COMMAND=$2
 if [ -z "$COMMAND" ]
 then
-  echo "Please specify command: up, down, restart, logs, bash, ps"
+  echo "Please specify command: up, down, restart, logs, bash, test, build"
   exit 1
 fi
 
@@ -48,6 +48,10 @@ then
 elif [ "$COMMAND" = "logs" ]
 then
   $COMPOSE_EXECUTABLE -f docker-compose.$ENV.yml logs $3 $4 $5 $6 $7 $8 $9
+
+elif [ "$COMMAND" = "build" ]
+then
+  $COMPOSE_EXECUTABLE -f docker-compose.prod.yml up -d --build 
 else
   echo "Invalid command: $COMMAND"
   exit 1

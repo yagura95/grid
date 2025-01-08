@@ -11,6 +11,7 @@ export async function setBias(bias: string) {
 export async function startGenerator() {
   try {
     socket.emit("GENERATOR_START")
+    console.log("GENERATOR_START")
   } catch(e) {
     console.error(e)
   }

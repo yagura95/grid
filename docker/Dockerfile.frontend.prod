@@ -1,0 +1,19 @@
+FROM node:20 AS build
+
+WORKDIR /app
+
+COPY /frontend /app
+
+RUN apt update && apt upgrade -y
+
+
+
+FROM node:20 
+
+WORKDIR /app
+
+COPY --from=build /app/dist /app/dist
+COPY /frontend/ecosystem.config.js /app/ecosystem.config.js
+COPY /scripts /scripts
+
+RUN npm install pm2 serve -g -y

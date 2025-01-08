@@ -41,7 +41,7 @@ jobs:
   build-test:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/test-ci' && github.event_name == 'push'
 
     steps:
     - uses: actions/checkout@v3

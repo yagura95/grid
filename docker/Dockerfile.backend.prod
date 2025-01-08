@@ -8,6 +8,7 @@ COPY /backend/ecosystem.config.js /app/ecosystem.config.js
 COPY /scripts /scripts
 
 RUN apt update && apt upgrade -y
+RUN yarn install
 RUN yarn build
 
 

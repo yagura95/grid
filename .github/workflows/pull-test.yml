@@ -23,18 +23,18 @@ jobs:
 
     - name: Start services 
       run: |
-        ./docker-control dev up 
+        ./docker-control.sh dev up 
 
     - name: Wait for services to be ready
       run: |
         sleep 30
 
     - name: Run Backend Tests
-      run: ./docker-control dev test backend
+      run: ./docker-control.sh dev test backend
 
     - name: Run Frontend Tests
-      run: ./docker-control dev test frontend
+      run: ./docker-control.sh dev test frontend
 
     - name: Stop services
       if: always()
-      run: ./docker-control dev down 
+      run: ./docker-control.sh dev down 

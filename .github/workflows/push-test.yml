@@ -23,7 +23,7 @@ jobs:
 
     - name: Start services 
       run: |
-        ./docker-control dev up 
+        ./docker-control.sh dev up 
 
     - name: Wait for services to be ready
       run: |
@@ -31,16 +31,16 @@ jobs:
 
     - name: Run Backend Tests
       run: |
-        ./docker-control dev test backend
+        ./docker-control.sh dev test backend
 
     - name: Run Frontend Tests
       run: |
-        ./docker-control dev test frontend
+        ./docker-control.sh dev test frontend
 
     - name: Stop services
       if: always()
       run: | 
-        ./docker-control dev down 
+        ./docker-control.sh dev down 
 
   build-test:
     needs: test
@@ -63,7 +63,7 @@ jobs:
 
     - name: Start services 
       run: |
-        ./docker-control prod up 
+        ./docker-control.sh prod up 
 
     - name: Wait for services to be ready
       run: |
@@ -71,14 +71,14 @@ jobs:
 
     - name: Run Backend Tests
       run: |
-        ./docker-control prod test backend
+        ./docker-control.sh prod test backend
 
     - name: Run Frontend Tests
       run: |
-        ./docker-control prod test frontend
+        ./docker-control.sh prod test frontend
 
     - name: Stop services
       if: always()
       run: | 
-        ./docker-control prod down 
+        ./docker-control.sh prod down 
 
